@@ -28,7 +28,7 @@ public enum Result<T, Error: Swift.Error>: ResultProtocol, CustomStringConvertib
 	}
 
 	/// Constructs a result from a function that uses `throw`, failing with `Error` if throws.
-	public init(attempt f: @noescape () throws -> T) {
+	public init(attempt f: () throws -> T) {
 		do {
 			self = .success(try f())
 		} catch {
@@ -51,7 +51,7 @@ public enum Result<T, Error: Swift.Error>: ResultProtocol, CustomStringConvertib
 	/// Case analysis for Result.
 	///
 	/// Returns the value produced by applying `ifFailure` to `Failure` Results, or `ifSuccess` to `Success` Results.
-	public func analysis<Result>(ifSuccess: @noescape (T) -> Result, ifFailure: @noescape (Error) -> Result) -> Result {
+	public func analysis<Result>(ifSuccess: (T) -> Result, ifFailure: (Error) -> Result) -> Result {
 		switch self {
 		case let .success(value):
 			return ifSuccess(value)
@@ -77,7 +77,7 @@ public enum Result<T, Error: Swift.Error>: ResultProtocol, CustomStringConvertib
 	#if os(Linux)
 	private typealias UserInfoType = Any
 	#else
-	private typealias UserInfoType = AnyObject
+	private typealias UserInfoType = Any
 	#endif
 
 	/// Constructs an error.
@@ -114,7 +114,7 @@ public enum Result<T, Error: Swift.Error>: ResultProtocol, CustomStringConvertib
 
 // MARK: - Derive result from failable closure
 
-public func materialize<T>(_ f: @noescape () throws -> T) -> Result<T, NSError> {
+public func materialize<T>(_ f: () throws -> T) -> Result<T, NSError> {
 	return materialize(try f())
 }
 

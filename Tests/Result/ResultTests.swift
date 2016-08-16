@@ -100,9 +100,9 @@ final class ResultTests: XCTestCase {
 	}
 
 	func testRecoverProducesRightForLeftFailure() {
-		struct Error: ErrorProtocol {}
+		struct ErrorStruct: Error {}
 
-		let left = Result<String, Error>.failure(Error())
+		let left = Result<String, ErrorStruct>.failure(ErrorStruct())
 		XCTAssertEqual(left.recover("right"), "right")
 	}
 
@@ -116,19 +116,19 @@ final class ResultTests: XCTestCase {
 	}
 
 	func testRecoverWithProducesRightSuccessForLeftFailureAndRightSuccess() {
-		struct Error: ErrorProtocol {}
+		struct ErrorStruct: Error {}
 
-		let left = Result<String, Error>.failure(Error())
-		let right = Result<String, Error>.success("right")
+		let left = Result<String, ErrorStruct>.failure(ErrorStruct())
+		let right = Result<String, ErrorStruct>.success("right")
 
 		XCTAssertEqual(left.recover(with: right).value, "right")
 	}
 
 	func testRecoverWithProducesRightFailureForLeftFailureAndRightFailure() {
-		enum Error: ErrorProtocol { case left, right }
+		enum ErrorStruct: Error { case left, right }
 
-		let left = Result<String, Error>.failure(.left)
-		let right = Result<String, Error>.failure(.right)
+		let left = Result<String, ErrorStruct>.failure(.left)
+		let right = Result<String, ErrorStruct>.failure(.right)
 
 		XCTAssertEqual(left.recover(with: right).error, .right)
 	}
@@ -220,7 +220,7 @@ func attempt<T>(_ value: T, succeed: Bool, error: NSErrorPointer) -> T? {
 #endif
 
 func tryIsSuccess(_ text: String?) throws -> String {
-	guard let text = text where text == "success" else {
+	guard let text = text , text == "success" else {
 		throw error
 	}
 
